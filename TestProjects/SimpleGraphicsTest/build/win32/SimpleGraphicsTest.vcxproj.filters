@@ -27,7 +27,7 @@
     <ClCompile Include="..\..\src\scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\include\MyMaterials.cpp">
+    <ClCompile Include="..\..\src\MyMaterials.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,6 +53,12 @@
     <ClInclude Include="..\..\include\SimpleMeshRenderingScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\BlinnPhongScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\SimpleMaterialUniforms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\FullScreenQuad.vs">
@@ -65,6 +71,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\assets\Simple3D.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\assets\Blinn-Phong.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\assets\Blinn-Phong.vs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

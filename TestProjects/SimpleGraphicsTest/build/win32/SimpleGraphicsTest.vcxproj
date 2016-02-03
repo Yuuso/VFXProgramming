@@ -90,16 +90,18 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\include\MyMaterials.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
+    <ClCompile Include="..\..\src\MyMaterials.cpp" />
     <ClCompile Include="..\..\src\scene.cpp" />
     <ClCompile Include="..\..\src\teapot.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\BlinnPhongScene.h" />
     <ClInclude Include="..\..\include\FullscreenQuadScene.h" />
     <ClInclude Include="..\..\include\MyMaterials.h" />
     <ClInclude Include="..\..\include\QuadScene.h" />
     <ClInclude Include="..\..\include\scene.h" />
+    <ClInclude Include="..\..\include\SimpleMaterialUniforms.h" />
     <ClInclude Include="..\..\include\SimpleMeshRenderingScene.h" />
     <ClInclude Include="..\..\include\teapot.h" />
     <ClInclude Include="..\..\include\TriangleScene.h" />
@@ -110,6 +112,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\assets\Blinn-Phong.fs" />
+    <None Include="..\..\assets\Blinn-Phong.vs" />
     <None Include="..\..\assets\FullScreenQuad.vs" />
     <None Include="..\..\assets\PlasmaEffect.fs" />
     <None Include="..\..\assets\Simple3D.fs" />

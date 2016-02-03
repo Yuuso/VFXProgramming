@@ -5,7 +5,14 @@
 struct SharedShaderValues : public core::Object
 {
 	float totalTime;
+	slmath::mat4 matModel;
+	slmath::mat4 matView;
+	slmath::mat4 matProj;
+	slmath::mat4 matModelView;
+	slmath::mat4 matNormal;
 	slmath::mat4 matModelViewProj;
+	slmath::vec3 lightPos;
+	slmath::vec3 camPos;
 };
 
 class GlobalShaderUniforms : public graphics::ShaderUniforms
@@ -19,6 +26,6 @@ public:
 
 private:
 	const SharedShaderValues* m_sharedShaderValues;
-	GLint m_id;
+	GLint m_id[8];
 	GLint m_idtime;
 };
