@@ -112,6 +112,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\assets\Blinn-Phong-Lava.fs" />
     <None Include="..\..\assets\Blinn-Phong.fs" />
     <None Include="..\..\assets\Blinn-Phong.vs" />
     <None Include="..\..\assets\FullScreenQuad.vs" />

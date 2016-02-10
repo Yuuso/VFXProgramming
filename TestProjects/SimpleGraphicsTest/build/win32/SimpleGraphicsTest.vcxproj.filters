@@ -73,10 +73,13 @@
     <None Include="..\..\assets\Simple3D.vs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\assets\Blinn-Phong.vs">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="..\..\assets\Blinn-Phong.fs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\assets\Blinn-Phong.vs">
+    <None Include="..\..\assets\Blinn-Phong-Lava.fs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
