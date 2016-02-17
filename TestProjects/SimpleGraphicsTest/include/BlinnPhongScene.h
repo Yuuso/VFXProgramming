@@ -4,6 +4,7 @@
 
 #include "teapot.h"
 #include "SimpleMaterialUniforms.h"
+#include "CubemapMaterialUniforms.h"
 #include <graphics/Mesh.h>
 #include <slmath/slmath.h>
 #include <core/Input.h>
@@ -26,23 +27,59 @@ public:
 		};
 
 		core::Ref<graphics::Shader> shader = new graphics::Shader("assets/Blinn-Phong.vs", "assets/Blinn-Phong.fs", attributes, sizeof(attributes) / sizeof(FRM_SHADER_ATTRIBUTE));
+		core::Ref<graphics::Shader> skyshader = new graphics::Shader("assets/Blinn-Phong.vs", "assets/Blinn-Phong-Sky.fs", attributes, sizeof(attributes) / sizeof(FRM_SHADER_ATTRIBUTE));
 
 		m_mesh = createTeapotMesh();
-		mesh = graphics::Mesh::loadFromOBJ("assets/Sphere.obj");
+		mesh = graphics::Mesh::loadFromOBJ("assets/SkyBall.obj");
 		
 		m_sharedValues = new SharedShaderValues();
 		m_sharedValues->totalTime = 0.0f;
 		SimpleMaterialUniforms* simpleMaterialUniforms = new SimpleMaterialUniforms(shader, m_sharedValues);
+		CubemapMaterialUniforms* cubemapMaterialUniforms = new CubemapMaterialUniforms(skyshader, m_sharedValues);
 
 		simpleMaterialUniforms->vAmbient = slmath::vec4(0.5f, 0.2f, 1.0f, 1.0f);
+		cubemapMaterialUniforms->vAmbient = slmath::vec4(0.5f, 0.2f, 1.0f, 1.0f);
 		simpleMaterialUniforms->vDiffuse = slmath::vec4(0.5f, 0.2f, 1.0f, 1.0f);
+		cubemapMaterialUniforms->vDiffuse = slmath::vec4(0.5f, 0.2f, 1.0f, 1.0f);
 		simpleMaterialUniforms->vSpecular = slmath::vec4(1.0f, 1.0f, 1.0f, 5.0f);
+		cubemapMaterialUniforms->vSpecular = slmath::vec4(1.0f, 1.0f, 1.0f, 5.0f);
 
-		graphics::Image* image = new graphics::Image(256, 256, 8);
-		image = graphics::Image::loadFromTGA("assets/CheckerBoard.tga");
+
+		graphics::Image* image = graphics::Image::loadFromTGA("assets/CheckerBoard.tga");
+		simpleMaterialUniforms->diffuseMap = new graphics::Texture2D();
 		simpleMaterialUniforms->diffuseMap->setData(image);
+		delete image;
+
+
+		eastl::string name = "BedroomCubeMap";
+
+		core::Ref<graphics::Image> cubeImageRefs[6];
+		cubeImageRefs[0] = graphics::Image::loadFromTGA("assets/" + name + "_RT.tga");
+		cubeImageRefs[1] = graphics::Image::loadFromTGA("assets/" + name + "_LF.tga");
+		cubeImageRefs[2] = graphics::Image::loadFromTGA("assets/" + name + "_DN.tga");
+		cubeImageRefs[3] = graphics::Image::loadFromTGA("assets/" + name + "_UP.tga");
+		cubeImageRefs[4] = graphics::Image::loadFromTGA("assets/" + name + "_FR.tga");
+		cubeImageRefs[5] = graphics::Image::loadFromTGA("assets/" + name + "_BK.tga");
+
+		graphics::Image* cubeImages[6];
+		for (int i = 0; i < 6; i++)
+		{
+			cubeImages[i] = cubeImageRefs[i].ptr();
+		}
+		graphics::Image* cubeImages2[6];
+		for (int i = 0; i < 6; i++)
+		{
+			cubeImages2[i] = cubeImageRefs[i].ptr();
+		}
+
+		simpleMaterialUniforms->cubeMap = new graphics::TextureCube();
+		simpleMaterialUniforms->cubeMap->setData(cubeImages);
+		cubemapMaterialUniforms->cubeMap = new graphics::TextureCube();
+		cubemapMaterialUniforms->cubeMap->setData(cubeImages2);
+
 
 		m_material = simpleMaterialUniforms;
+		m_material_cube = cubemapMaterialUniforms;
 
 		checkOpenGL();
 	}
@@ -50,7 +87,7 @@ public:
 
 	virtual ~BlinnPhongScene()
 	{
-		LOG("BlinnPhongScenedestruct");
+		LOG("BlinnPhongScene destruct");
 		delete m_sharedValues;
 		delete mesh;
 	}
@@ -70,7 +107,7 @@ public:
 
 		float fAspect = (float) esContext->width / (float) esContext->height;
 
-		m_matProjection = slmath::perspectiveFovRH(slmath::radians(90.0f), fAspect, 5.0f, 1000.0f);
+		m_matProjection = slmath::perspectiveFovRH(slmath::radians(70.0f), fAspect, 5.0f, 1000.0f);
 
 		m_matView = slmath::lookAtRH(slmath::vec3(0.0f, 70.0f, 70.0f), slmath::vec3(0.0f, viewY, 0.0f), slmath::vec3(0.0f, 1.0f, 0.0f));
 
@@ -90,10 +127,18 @@ public:
 		{
 			transl.x -= cameraSpeed;
 		}
+		if (core::getKeyState(core::KEY_Q))
+		{
+			transl.y += cameraSpeed * 0.3f;
+		}
+		if (core::getKeyState(core::KEY_E))
+		{
+			transl.y -= cameraSpeed * 0.3f;
+		}
 		if (core::getMouseButtonState(core::MOUSE_LEFT))
 		{
 			transl.x += (core::getMouseAxisX() - lastMouseCoord.x) * 0.3f;
-			transl.y += (core::getMouseAxisY() - lastMouseCoord.y) * 0.3f;
+			transl.y -= (core::getMouseAxisY() - lastMouseCoord.y) * 0.3f;
 		}
 		if (core::getMouseButtonState(core::MOUSE_RIGHT))
 		{
@@ -118,8 +163,10 @@ public:
 		m_sharedValues->matNormal = matNormal;
 		m_sharedValues->matModelViewProj = matModelViewProj;
 
-		m_sharedValues->lightPos = slmath::vec3((float) core::getMouseAxisX() - esContext->width / 2.0f, (float) core::getMouseAxisY() + esContext->height / 2.0f, -20.0f);
-		m_sharedValues->camPos = slmath::vec3(0.0f, (float) core::getMouseAxisY(), (float) core::getMouseAxisX());
+		m_sharedValues->lightPos = slmath::vec3(((float) core::getMouseAxisX() - esContext->width / 2.0f) - transl.x, 
+												(-(float) core::getMouseAxisY() + esContext->height / 2.0f) - transl.y,
+												90.0f);
+		m_sharedValues->camPos = slmath::vec3(0.0f, 0.0f, 0.0f);
 		m_sharedValues->camPos = transl;
 
 		lastMouseCoord = slmath::vec2(core::getMouseAxisX(), core::getMouseAxisY());
@@ -145,11 +192,13 @@ public:
 
 		m_sharedValues->matModelViewProj = matModelViewProj;
 
+		m_material_cube->bind();
+		checkOpenGL();
+		mesh->render();
 		m_material->bind();
 		checkOpenGL();
-
 		m_mesh->render();
-		mesh->render();
+
 		checkOpenGL();
 
 	}
@@ -179,4 +228,5 @@ private:
 	float m_totalTime;
 	SharedShaderValues* m_sharedValues;
 	core::Ref<graphics::ShaderUniforms> m_material;
+	core::Ref<graphics::ShaderUniforms> m_material_cube;
 };

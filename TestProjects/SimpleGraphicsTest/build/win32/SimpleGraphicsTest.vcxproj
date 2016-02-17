@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\BlinnPhongScene.h" />
+    <ClInclude Include="..\..\include\CubemapMaterialUniforms.h" />
     <ClInclude Include="..\..\include\FullscreenQuadScene.h" />
     <ClInclude Include="..\..\include\MyMaterials.h" />
     <ClInclude Include="..\..\include\QuadScene.h" />
@@ -113,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\Blinn-Phong-Lava.fs" />
+    <None Include="..\..\assets\Blinn-Phong-Sky.fs" />
     <None Include="..\..\assets\Blinn-Phong.fs" />
     <None Include="..\..\assets\Blinn-Phong.vs" />
     <None Include="..\..\assets\FullScreenQuad.vs" />
